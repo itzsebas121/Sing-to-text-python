@@ -1,10 +1,10 @@
-# 🤟 Traductor de Lengua de Señas Peruana (LSP) a Texto y Voz
+# 🤟 Sign Language Recognition System - Real-time Translation to Text and Speech
 
-Sistema de reconocimiento y traducción en tiempo real de Lengua de Señas Peruana (LSP) utilizando Deep Learning y Computer Vision.
+Real-time sign language recognition and translation system using Deep Learning and Computer Vision.
 
-## 📋 Descripción del Proyecto
+## 📋 Project Description
 
-Este proyecto implementa un sistema completo de reconocimiento de señas peruanas que captura gestos mediante cámara web, los procesa utilizando MediaPipe para extraer puntos clave (keypoints) del cuerpo, manos y rostro, y los clasifica mediante una red neuronal LSTM para traducirlos a texto y voz en español.
+This project implements a complete sign language recognition system that captures gestures via webcam, processes them using MediaPipe to extract keypoints from body, hands, and face, and classifies them using an LSTM neural network to translate them into text and speech.
 
 ## 🧠 Arquitectura de la Red Neuronal
 
@@ -324,30 +324,6 @@ Edita `model.py`:
 ```python
 def get_model(max_length_frames, output_length: int):
     model = Sequential()
-    model.add(LSTM(128, return_sequences=True, ...))  # Cambiar unidades
-    model.add(Dropout(0.3))  # Ajustar dropout
-    # ... modificar capas según necesidad
-```
-
-## 📊 Palabras Reconocidas Actualmente
-
-El modelo está entrenado para reconocer las siguientes señas LSP:
-- **hola** - Saludo básico
-- **adios** - Despedida
-- **aplausos** - Gesto de aplaudir
-- **gusto_conocerte** - Frase de cortesía
-- **nombre** - Pregunta por el nombre
-- **hasta_luego** - Despedida temporal
-- **zanahoria** - Objeto/alimento
-- **señor** - Título de cortesía
-
-*Nota: Puedes expandir el vocabulario siguiendo los pasos de la sección "Agregar Nuevas Palabras"*
-
-## 🔧 Solución de Problemas
-
-### Error: "No module named 'mediapipe'"
-```bash
-pip install mediapipe==0.10.11
 ```
 
 ### Error: Incompatibilidad de TensorFlow
