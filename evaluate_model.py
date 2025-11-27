@@ -102,8 +102,34 @@ def evaluate_model(src=None, threshold=0.8, margin_frame=1, delay_frames=3, max_
                         recording = True
                         continue
                     kp_seq = kp_seq[: - (margin_frame + delay_frames)]
-                    kp_normalized = normalize_keypoints(kp_seq, int(MODEL_FRAMES))
-                    res = model.predict(np.expand_dims(kp_normalized, axis=0))[0]
+                    
+                    # Validate sufficient keypoints before prediction
+                    if len(kp_seq) >= MIN_LENGTH_FRAMES:
+                        kp_normalized = normalize_keypoints(kp_seq, int(MODEL_FRAMES))
+                        
+                        # Ensure normalized keypoints have correct shape
+                        if len(kp_normalized) == int(MODEL_FRAMES):
+                            res = model.predict(np.expand_dims(kp_normalized, axis=0))[0]
+                            
+                            print(np.argmax(res), f"({res[np.argmax(res)] * 100:.2f}%)")
+                            prob = res[np.argmax(res)]
+
+                            if prob > threshold:
+                                word_id = word_ids[np.argmax(res)].split('-')[0]
+                                sent = words_text.get(word_id)
+                            else:
+                                sent = "No reconocido"
+
+                            print("Resultado:", sent, f"({prob*100:.2f}%)")
+                            sentence.insert(0, sent)
+
+                            if sent != "No reconocido":
+                                text_to_speech(sent)
+                
+                recording = False
+                fix_frames = 0
+                count_frame = 0
+                kp_seq = []
             
             if not src:
                 cv2.rectangle(frame, (0, 0), (640, 35), (245, 117, 16), -1)
