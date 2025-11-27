@@ -4,7 +4,7 @@ import cv2
 # SETTINGS
 MIN_LENGTH_FRAMES = 5
 LENGTH_KEYPOINTS = 1662
-MODEL_FRAMES = 15
+MODEL_FRAMES = 30  # Increased from 15 to 30 for better temporal resolution
 
 # FEATURE EXTRACTION MODE
 USE_NORMALIZED_KEYPOINTS = True  # Set to True for position-invariant recognition
@@ -34,4 +34,5 @@ words_text = {
     "nos_vemos":"Nos vemos",
     "mejor_amigo":"Mejor amigo",
     "como_te_llamas":"¿Como te llamas?"
+
 }
