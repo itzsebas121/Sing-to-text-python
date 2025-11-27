@@ -124,8 +124,8 @@ modelo_lstm_lsp/
 
 ```bash
 # Clonar el repositorio
-git clone <url-del-repositorio>
-cd modelo_lstm_lsp
+git clone https://github.com/itzsebas121/Sing-to-text-python
+cd Sing-to-text-python
 
 # Crear entorno virtual (recomendado)
 python -m venv venv
