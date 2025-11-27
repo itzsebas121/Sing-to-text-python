@@ -133,7 +133,56 @@ source venv/bin/activate  # En Windows: venv\Scripts\activate
 
 # Instalar dependencias
 pip install -r requirements.txt
+
+# Crear estructura de directorios necesaria
+mkdir -p data/keypoints frame_actions  # Linux/Mac
+# En Windows: mkdir data\keypoints, mkdir frame_actions
 ```
+
+### Configuración Inicial Después de Clonar
+
+> **⚠️ IMPORTANTE:** El repositorio NO incluye datos de entrenamiento ni modelos pre-entrenados debido a su gran tamaño. Después de clonar, tienes **dos opciones**:
+
+#### Opción 1: Entrenar tu Propio Modelo (Recomendado para Aprender) 🎓
+
+Esta opción te permite entender todo el proceso desde cero:
+
+1. **Capturar tus propias muestras** para cada palabra que quieras reconocer
+2. **Normalizar** las muestras capturadas
+3. **Generar keypoints** de las muestras
+4. **Entrenar** el modelo LSTM
+5. **Evaluar** el modelo entrenado
+
+```bash
+# Sigue el flujo completo descrito en la sección "Guía de Uso"
+python capture_samples.py      # Paso 1
+python normalize_samples.py    # Paso 2
+python create_keypoints.py     # Paso 3
+python training_model.py       # Paso 4
+python evaluate_model.py       # Paso 5
+```
+
+**Tiempo estimado:** 2-4 horas (dependiendo de cuántas palabras captures)
+
+#### Opción 2: Descargar Modelo Pre-entrenado (Inicio Rápido) ⚡
+
+Si solo quieres probar el sistema sin entrenar:
+
+1. Descarga el modelo pre-entrenado y datos desde [enlace-a-releases] *(próximamente)*
+2. Extrae los archivos en las carpetas correspondientes:
+   - `models/actions_15.keras` - Modelo entrenado
+   - `models/words.json` - Lista de palabras (ya incluido en el repo)
+   - `data/keypoints/*.h5` - Keypoints de entrenamiento (opcional)
+3. Ejecuta directamente:
+
+```bash
+python evaluate_model.py  # Prueba en tiempo real
+# o
+python main.py           # Interfaz GUI
+```
+
+**Nota:** El modelo pre-entrenado reconoce las palabras listadas en la sección "Palabras Reconocidas Actualmente".
+
 
 ### Dependencias Principales
 ```
