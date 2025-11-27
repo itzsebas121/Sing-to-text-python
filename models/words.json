@@ -1,11 +1,13 @@
 {
     "word_ids": [
         "hola",
+        "que_haces",
+        "como_estas",
+        "buenos_dias",
         "adios",
-        "aplausos",
         "gusto_conocerte",
-        "nombre",
-        "hasta_luego",
-        "zanahoria"
+        "nos_vemos",
+        "mejor_amigo",
+        "como_te_llamas"
     ]
 }

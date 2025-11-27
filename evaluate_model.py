@@ -10,6 +10,12 @@ from text_to_speech import text_to_speech
 
 def interpolate_keypoints(keypoints, target_length=15):
     current_length = len(keypoints)
+    
+    # Handle edge cases
+    if current_length == 0:
+        return []
+    if current_length == 1:
+        return [keypoints[0]] * target_length
     if current_length == target_length:
         return keypoints
     
@@ -47,7 +53,7 @@ def evaluate_model(src=None, threshold=0.8, margin_frame=1, delay_frames=3, max_
     recording = False
     
     with Holistic() as holistic_model:
-        video = cv2.VideoCapture(src or 1)
+        video = cv2.VideoCapture(src or 0)
         
         while video.isOpened():
             ret, frame = video.read()

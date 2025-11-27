@@ -23,10 +23,13 @@ FONT_POS = (5, 30)
 
 words_text = {
     "hola": "HOLA",
-    "adios": "ADIOS",
-    "aplausos":"APLAUSOS",
-    "gusto_conocerte": "GUSTO CONOCERTE",
-    "nombre": "NOMBRE",
-    "hasta_luego": "HASTA LUEGO",
-    "zanahoria": "ZANAHORIA",
+    "que_haces": "¿QUE HACES?",
+    "como_estas": "¿COMO ESTAS?",
+    "buenos_dias":"Buenos dias",
+    "adios":"Adios",
+    "gusto_conocerte":"Gusto conocerte",
+    "nos_vemos":"Nos vemos",
+    "mejor_amigo":"Mejor amigo",
+    "como_te_llamas":"¿Como te llamas?"
+
 }
