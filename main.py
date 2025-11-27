@@ -37,6 +37,7 @@ class VideoRecorder(QMainWindow):
         self.fix_frames = 0
         self.margin_frame = 1
         self.delay_frames = 3
+        self.max_frames = 50
         self.model = load_model(MODEL_PATH)
         self.recording = False
     
@@ -55,6 +56,23 @@ class VideoRecorder(QMainWindow):
             if self.count_frame > self.margin_frame:
                 self.kp_seq.append(extract_keypoints(results))
             
+            # Force prediction if max frames reached
+            if self.count_frame >= self.max_frames:
+                if len(self.kp_seq) >= MIN_LENGTH_FRAMES:
+                    kp_normalized = normalize_keypoints(self.kp_seq, int(MODEL_FRAMES))
+                    res = self.model.predict(np.expand_dims(kp_normalized, axis=0))[0]
+                    
+                    if res[np.argmax(res)] > 0.7:
+                        word_id = word_ids[np.argmax(res)].split('-')[0]
+                        sent = words_text.get(word_id)
+                        self.sentence.insert(0, sent)
+                        text_to_speech(sent)
+                
+                self.recording = False
+                self.fix_frames = 0
+                self.count_frame = 0
+                self.kp_seq = []
+            
         else:
             if self.count_frame >= MIN_LENGTH_FRAMES + self.margin_frame:
                 self.fix_frames += 1
@@ -70,7 +88,7 @@ class VideoRecorder(QMainWindow):
                     word_id = word_ids[np.argmax(res)].split('-')[0]
                     sent = words_text.get(word_id)
                     self.sentence.insert(0, sent)
-                    text_to_speech(sent) # ONLY LOCAL (NO SERVER)
+                    text_to_speech(sent)
             
             self.recording = False
             self.fix_frames = 0

@@ -38,7 +38,7 @@ def normalize_keypoints(keypoints, target_length=15):
     else:
         return keypoints
     
-def evaluate_model(src=None, threshold=0.8, margin_frame=1, delay_frames=3):
+def evaluate_model(src=None, threshold=0.8, margin_frame=1, delay_frames=3, max_frames=50):
     kp_seq, sentence = [], []
     word_ids = get_word_ids(WORDS_JSON_PATH)
     model = load_model(MODEL_PATH)
@@ -55,14 +55,39 @@ def evaluate_model(src=None, threshold=0.8, margin_frame=1, delay_frames=3):
 
             results = mediapipe_detection(frame, holistic_model)
             
-            # TODO: colocar un máximo de frames para cada seña,
-            # es decir, que traduzca incluso cuando hay mano si se llega a ese máximo.
+            # Improved: Force prediction when reaching max_frames to prevent infinite capture
             if there_hand(results) or recording:
                 recording = False
                 count_frame += 1
                 if count_frame > margin_frame:
                     kp_frame = extract_keypoints(results)
                     kp_seq.append(kp_frame)
+                
+                # Force prediction if max frames reached
+                if count_frame >= max_frames:
+                    if len(kp_seq) >= MIN_LENGTH_FRAMES:
+                        kp_normalized = normalize_keypoints(kp_seq, int(MODEL_FRAMES))
+                        res = model.predict(np.expand_dims(kp_normalized, axis=0))[0]
+                        
+                        print(np.argmax(res), f"({res[np.argmax(res)] * 100:.2f}%)")
+                        prob = res[np.argmax(res)]
+
+                        if prob > threshold:
+                            word_id = word_ids[np.argmax(res)].split('-')[0]
+                            sent = words_text.get(word_id)
+                        else:
+                            sent = "No reconocido"
+
+                        print("Resultado:", sent, f"({prob*100:.2f}%)")
+                        sentence.insert(0, sent)
+
+                        if sent != "No reconocido":
+                            text_to_speech(sent)
+                    
+                    recording = False
+                    fix_frames = 0
+                    count_frame = 0
+                    kp_seq = []
             
             else:
                 if count_frame >= MIN_LENGTH_FRAMES + margin_frame:
@@ -73,37 +98,13 @@ def evaluate_model(src=None, threshold=0.8, margin_frame=1, delay_frames=3):
                     kp_seq = kp_seq[: - (margin_frame + delay_frames)]
                     kp_normalized = normalize_keypoints(kp_seq, int(MODEL_FRAMES))
                     res = model.predict(np.expand_dims(kp_normalized, axis=0))[0]
-                    
-                    print(np.argmax(res), f"({res[np.argmax(res)] * 100:.2f}%)")
-                    prob = res[np.argmax(res)]
-
-                    if prob > threshold:
-                        # Palabra reconocida
-                        word_id = word_ids[np.argmax(res)].split('-')[0]
-                        sent = words_text.get(word_id)
-                    else:
-                        # No reconocido (debajo del umbral)
-                        sent = "No reconocido"
-
-                    print("Resultado:", sent, f"({prob*100:.2f}%)")
-
-                    # Guarda o habla el resultado
-                    sentence.insert(0, sent)
-
-                    # Solo hablar si no es "No reconocido"
-                    if sent != "No reconocido":
-                        text_to_speech(sent)
-                recording = False
-                fix_frames = 0
-                count_frame = 0
-                kp_seq = []
             
             if not src:
                 cv2.rectangle(frame, (0, 0), (640, 35), (245, 117, 16), -1)
                 cv2.putText(frame, ' | '.join(sentence), FONT_POS, FONT, FONT_SIZE, (255, 255, 255))
                 
                 draw_keypoints(frame, results)
-                cv2.imshow('Traductor LSP', frame)
+                cv2.imshow('Sign Language Translator', frame)
                 if cv2.waitKey(10) & 0xFF == ord('q'):
                     break
                     
