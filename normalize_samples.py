@@ -65,16 +65,10 @@ if __name__ == "__main__":
     word_ids = [word for word in os.listdir(os.path.join(ROOT_PATH, FRAME_ACTIONS_PATH))]
     
     # GENERAR PARA UNA PALABRA O CONJUNTO
-    # word_ids = ["buenos_dias"]
+    # word_ids = ["word_example"]
     
     for word_id in word_ids:
         word_path = os.path.join(FRAME_ACTIONS_PATH, word_id)
         if os.path.isdir(word_path):
             print(f'Normalizando frames para "{word_id}"...')
             process_directory(word_path, MODEL_FRAMES)
-    
-    # sample_directory = r"E:\Data\LSP Project\RED NEURONAL\frame_actions\buenos_dias\sample_240113195007489206"
-    # frames = read_frames_from_directory(sample_directory)
-    # normalized_frames = normalize_frames(frames, 15)
-    # clear_directory(sample_directory)
-    # save_normalized_frames(sample_directory, normalized_frames)

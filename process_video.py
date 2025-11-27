@@ -84,7 +84,6 @@ def process_video(input_path, target_fps=12):
 
 
 if __name__ == "__main__":
-    input_path = r"F:\CarpetasW\Imágenes\Álbum de cámara\WIN_20240315_20_55_13_Pro.mp4"
-    # input_path = r"E:\Data\LSP Project\RED NEURONAL (PYTHON 3.8)\tmp\REC7173119773952296862.mp4"
+    input_path = r"path/to/your/video.mp4"
     process_video(input_path)
     print("¡Conversión completa!")
