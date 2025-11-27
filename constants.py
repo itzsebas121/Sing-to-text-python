@@ -6,6 +6,9 @@ MIN_LENGTH_FRAMES = 5
 LENGTH_KEYPOINTS = 1662
 MODEL_FRAMES = 15
 
+# FEATURE EXTRACTION MODE
+USE_NORMALIZED_KEYPOINTS = True  # Set to True for position-invariant recognition
+
 # PATHS
 ROOT_PATH = os.getcwd()
 FRAME_ACTIONS_PATH = os.path.join(ROOT_PATH, "frame_actions")
@@ -31,5 +34,4 @@ words_text = {
     "nos_vemos":"Nos vemos",
     "mejor_amigo":"Mejor amigo",
     "como_te_llamas":"¿Como te llamas?"
-
 }

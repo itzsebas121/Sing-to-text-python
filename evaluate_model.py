@@ -66,7 +66,12 @@ def evaluate_model(src=None, threshold=0.8, margin_frame=1, delay_frames=3, max_
                 recording = False
                 count_frame += 1
                 if count_frame > margin_frame:
-                    kp_frame = extract_keypoints(results)
+                    # Use normalized keypoints if enabled
+                    from constants import USE_NORMALIZED_KEYPOINTS
+                    if USE_NORMALIZED_KEYPOINTS:
+                        kp_frame = extract_keypoints_normalized(results)
+                    else:
+                        kp_frame = extract_keypoints(results)
                     kp_seq.append(kp_frame)
                 
                 # Force prediction if max frames reached

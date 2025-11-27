@@ -54,7 +54,12 @@ class VideoRecorder(QMainWindow):
             self.recording = False
             self.count_frame += 1
             if self.count_frame > self.margin_frame:
-                self.kp_seq.append(extract_keypoints(results))
+                # Use normalized keypoints if enabled
+                from constants import USE_NORMALIZED_KEYPOINTS
+                if USE_NORMALIZED_KEYPOINTS:
+                    self.kp_seq.append(extract_keypoints_normalized(results))
+                else:
+                    self.kp_seq.append(extract_keypoints(results))
             
             # Force prediction if max frames reached
             if self.count_frame >= self.max_frames:

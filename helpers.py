@@ -75,10 +75,74 @@ def save_frames(frames, output_folder):
 
 # CREATE KEYPOINTS
 def extract_keypoints(results):
+    """Extract raw keypoints (original function for compatibility)"""
     pose = np.array([[res.x, res.y, res.z, res.visibility] for res in results.pose_landmarks.landmark]).flatten() if results.pose_landmarks else np.zeros(33*4)
     face = np.array([[res.x, res.y, res.z] for res in results.face_landmarks.landmark]).flatten() if results.face_landmarks else np.zeros(468*3)
     lh = np.array([[res.x, res.y, res.z] for res in results.left_hand_landmarks.landmark]).flatten() if results.left_hand_landmarks else np.zeros(21*3)
     rh = np.array([[res.x, res.y, res.z] for res in results.right_hand_landmarks.landmark]).flatten() if results.right_hand_landmarks else np.zeros(21*3)
+    return np.concatenate([pose, face, lh, rh])
+
+def extract_keypoints_normalized(results):
+    """
+    Extract keypoints normalized relative to shoulder midpoint
+    Makes recognition position-invariant and scale-invariant
+    """
+    if not results.pose_landmarks:
+        return np.zeros(33*4 + 468*3 + 21*3 + 21*3)
+    
+    # Get shoulder positions (landmarks 11 and 12)
+    left_shoulder = results.pose_landmarks.landmark[11]
+    right_shoulder = results.pose_landmarks.landmark[12]
+    
+    # Calculate reference point (midpoint between shoulders)
+    ref_x = (left_shoulder.x + right_shoulder.x) / 2
+    ref_y = (left_shoulder.y + right_shoulder.y) / 2
+    ref_z = (left_shoulder.z + right_shoulder.z) / 2
+    
+    # Calculate scale factor (shoulder width for scale invariance)
+    shoulder_width = np.sqrt(
+        (left_shoulder.x - right_shoulder.x)**2 + 
+        (left_shoulder.y - right_shoulder.y)**2 + 
+        (left_shoulder.z - right_shoulder.z)**2
+    )
+    scale = max(shoulder_width, 0.01)  # Avoid division by zero
+    
+    # Normalize pose landmarks
+    if results.pose_landmarks:
+        pose = np.array([
+            [(res.x - ref_x) / scale, (res.y - ref_y) / scale, (res.z - ref_z) / scale, res.visibility] 
+            for res in results.pose_landmarks.landmark
+        ]).flatten()
+    else:
+        pose = np.zeros(33*4)
+    
+    # Normalize face landmarks
+    if results.face_landmarks:
+        face = np.array([
+            [(res.x - ref_x) / scale, (res.y - ref_y) / scale, (res.z - ref_z) / scale] 
+            for res in results.face_landmarks.landmark
+        ]).flatten()
+    else:
+        face = np.zeros(468*3)
+    
+    # Normalize left hand landmarks
+    if results.left_hand_landmarks:
+        lh = np.array([
+            [(res.x - ref_x) / scale, (res.y - ref_y) / scale, (res.z - ref_z) / scale] 
+            for res in results.left_hand_landmarks.landmark
+        ]).flatten()
+    else:
+        lh = np.zeros(21*3)
+    
+    # Normalize right hand landmarks
+    if results.right_hand_landmarks:
+        rh = np.array([
+            [(res.x - ref_x) / scale, (res.y - ref_y) / scale, (res.z - ref_z) / scale] 
+            for res in results.right_hand_landmarks.landmark
+        ]).flatten()
+    else:
+        rh = np.zeros(21*3)
+    
     return np.concatenate([pose, face, lh, rh])
 
 def get_keypoints(model, sample_path):
@@ -86,12 +150,20 @@ def get_keypoints(model, sample_path):
     ### OBTENER KEYPOINTS DE LA MUESTRA
     Retorna la secuencia de keypoints de la muestra
     '''
+    from constants import USE_NORMALIZED_KEYPOINTS
+    
     kp_seq = np.array([])
     for img_name in os.listdir(sample_path):
         img_path = os.path.join(sample_path, img_name)
         frame = cv2.imread(img_path)
         results = mediapipe_detection(frame, model)
-        kp_frame = extract_keypoints(results)
+        
+        # Use normalized keypoints if enabled
+        if USE_NORMALIZED_KEYPOINTS:
+            kp_frame = extract_keypoints_normalized(results)
+        else:
+            kp_frame = extract_keypoints(results)
+            
         kp_seq = np.concatenate([kp_seq, [kp_frame]] if kp_seq.size > 0 else [[kp_frame]])
     return kp_seq
 
