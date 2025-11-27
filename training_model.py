@@ -3,7 +3,7 @@ from model import get_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.callbacks import EarlyStopping
 from sklearn.model_selection import train_test_split
-from keras.utils import to_categorical
+from tensorflow.keras.utils import to_categorical
 from helpers import get_word_ids, get_sequences_and_labels
 from constants import *
 

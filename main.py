@@ -6,7 +6,7 @@ from PyQt5.QtCore import QTimer, Qt
 from PyQt5.uic import loadUi
 
 import numpy as np
-from keras.models import load_model
+from tensorflow.keras.models import load_model
 from mediapipe.python.solutions.holistic import Holistic
 from evaluate_model import normalize_keypoints
 from helpers import *

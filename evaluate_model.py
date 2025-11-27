@@ -2,7 +2,7 @@ import os
 import cv2
 import numpy as np
 from mediapipe.python.solutions.holistic import Holistic
-from keras.models import load_model
+from tensorflow.keras.models import load_model
 from helpers import *
 from constants import *
 from tensorflow.keras.preprocessing.sequence import pad_sequences
